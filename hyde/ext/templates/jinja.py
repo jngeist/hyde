@@ -13,6 +13,7 @@ from hyde.fs import File, Folder
 from hyde.model import Expando
 from hyde.template import HtmlWrap, Template
 from hyde.util import getLoggerWithNullHandler
+from hyde.loader import load_python_object
 from operator import attrgetter
 
 from jinja2 import contextfunction, Environment
@@ -685,6 +686,13 @@ class Jinja2Template(Template):
         self.env.filters['xmldatetime'] = xmldatetime
         self.env.filters['islice'] = islice
         self.env.filters['top'] = top
+
+        try:
+            filters = attrgetter('config.jinja2.filters')(site).to_dict()
+            for (name, funcname) in filters.items():
+                self.env.filters[name] = load_python_object(funcname)
+        except AttributeError:
+            pass
 
         config = {}
         if hasattr(site, 'config'):
