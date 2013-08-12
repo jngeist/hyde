@@ -82,7 +82,7 @@ class ImageSizerPlugin(Plugin):
         except AttributeError:
             mode = "production"
 
-        if not resource.source_file.kind == 'html':
+        if not resource.source_file.kind in ['html', 'md']:
             return
 
         if mode.startswith('dev'):

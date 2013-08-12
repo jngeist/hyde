@@ -38,7 +38,8 @@ class UglifyPlugin(CLTransformer):
         except AttributeError:
             mode = "production"
 
-        if not resource.source_file.kind == 'js':
+        allowed_kinds = ['js', 'coffee']
+        if not resource.source_file.kind in allowed_kinds:
             return
 
         if mode.startswith('dev'):

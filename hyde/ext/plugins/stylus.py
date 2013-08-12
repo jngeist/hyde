@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Less css plugin
+Stylus plugin
 """
 
 from hyde.plugin import CLTransformer
@@ -12,7 +12,7 @@ import subprocess
 
 class StylusPlugin(CLTransformer):
     """
-    The plugin class for less css
+    The plugin class for Stylus
     """
 
     def __init__(self, site):
@@ -73,14 +73,15 @@ class StylusPlugin(CLTransformer):
     @property
     def defaults(self):
         """
-        Returns `compress` if not in development mode.
+        Returns `compress` if not in development mode;
+        otherwise, returns `firebug` (to support FireStylus)
         """
         try:
             mode = self.site.config.mode
         except AttributeError:
             mode = "production"
 
-        defaults = {"compress":""}
+        defaults = {"compress": ""}
         if mode.startswith('dev'):
             defaults = {}
         return defaults

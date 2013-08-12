@@ -26,6 +26,7 @@ class Paginator:
         self.sorter = getattr(settings, 'sorter', None)
         self.size = getattr(settings, 'size', 10)
         self.file_pattern = getattr(settings, 'file_pattern', self.file_pattern)
+        self.source = getattr(settings, 'source', None)
 
     def _relative_url(self, source_path, number, basename, ext):
         """
@@ -143,6 +144,7 @@ class PaginatorPlugin(Plugin):
                                  if hasattr(res.meta, 'paginator'))
             for resource in paged_resources:
                 paginator = Paginator(resource.meta.paginator)
-                added_resources += paginator.walk_paged_resources(node, resource)
+                source = self.site.content.node_from_relative_path(paginator.source) or node
+                added_resources += paginator.walk_paged_resources(source, resource)
 
             node.resources += added_resources

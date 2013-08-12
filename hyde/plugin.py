@@ -224,8 +224,7 @@ class Plugin(object):
         tampered with it. Note that the source file associated with the
         text resource may not be modifed by any plugins.
 
-        If this function returns a value, it is used as the text for further
-        processing.
+        If this function returns a value, it is used as the text for further processing.
         """
         return text
 

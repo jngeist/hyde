@@ -56,10 +56,15 @@ def get_tagger_sort_method(site):
 
 def walk_resources_tagged_with(node, tag):
     tags = set(unicode(tag).split('+'))
+    try:
+        tagkey = attrgetter("tagkey")(node.site.config.tagger)
+    except AttributeError:
+        tagkey = "meta.tags"
+
     walker = get_tagger_sort_method(node.site)
     for resource in walker():
         try:
-            taglist = set(attrgetter("meta.tags")(resource))
+            taglist = set(attrgetter(tagkey)(resource))
         except AttributeError:
             continue
         if tags <= taglist:
@@ -78,6 +83,7 @@ class TaggerPlugin(Plugin):
             atts: source.kind
     tagger:
        sorter: kind # How to sort the resources in a tag
+       tagkey: meta.tags # Metadata key where tags are stored
        archives:
             blog:
                template: tagged_posts.j2
@@ -131,7 +137,11 @@ class TaggerPlugin(Plugin):
         adds them to the tag list if needed.
         """
         try:
-            taglist = attrgetter("meta.tags")(resource)
+            tagkey = attrgetter("tagkey")(self.site.config.tagger)
+        except AttributeError:
+            tagkey = "meta.tags"
+        try:
+            taglist = attrgetter(tagkey)(resource)
         except AttributeError:
             return
 
@@ -201,7 +211,9 @@ extends: false
 {%% set walker = source['walk_resources_tagged_with_%(tag)s'] %%}
 {%% extends "%(template)s" %%}
 """
-        for tagname, tag in self.site.tagger.tags.to_dict().iteritems():
+        tags = self.site.tagger.tags.to_dict()
+        tags.update(self.site.config.tagger.tags)
+        for tagname, tag in tags.iteritems():
             tag_data = {
                 "tag": tagname,
                 "node": source.name,
