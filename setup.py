@@ -125,7 +125,7 @@ setup(name=PROJECT,
           'markdown',
           'smartypants',
           'pygments',
-          'typogrify-hyde'
+          'typogrify'
       ),
       tests_require=(
         'nose',
