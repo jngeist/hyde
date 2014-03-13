@@ -84,7 +84,7 @@ class Engine(Application):
     @store('-d', '--deploy-path', dest='deploy', default=None,
                         help='Where should the site be generated?')
     @true('-r', '--regen', dest='regen', default=False,
-                        help='Only process changed files')
+                        help='Regenerate the whole site, including unchanged files')
     def gen(self, args):
         """
         The generate command. Generates the site at the given
@@ -114,7 +114,7 @@ class Engine(Application):
         """
         The serve command. Serves the site at the given
         deployment directory, address and port. Regenerates
-        the entire site or specific files based on ths request.
+        the entire site or specific files based on the request.
         """
         sitepath = self.main(args)
         site = self.make_site(sitepath, args.config, args.deploy)
