@@ -10,13 +10,11 @@ def notify(msg):
 
 
 @task
-def clear():
-    local("if [ -e 'deploy' ] ; then rm -r deploy ; fi")
-
-
-@task
-def gen():
-    local("hyde gen")
+def gen(r=False):
+    if r:
+        local("hyde gen -r")
+    else:
+        local("hyde gen")
     notify("Generation complete.")
 
 
@@ -36,19 +34,16 @@ def pub():
 
 @task
 def reserve():
-    clear()
-    gen()
+    gen(r=True)
     serve()
 
 
 @task
 def regen():
-    clear()
-    gen()
+    gen(r=True)
 
 
 @task
 def repub():
-    clear()
-    gen()
+    gen(r=True)
     pub()
