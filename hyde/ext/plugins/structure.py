@@ -324,8 +324,12 @@ class PaginatorPlugin(Plugin):
             paged_resources = (res for res in node.resources
                                  if hasattr(res.meta, 'paginator'))
             for resource in paged_resources:
+                if hasattr(resource.meta.paginator, "source"):
+                    source = self.site.content.node_from_relative_path(resource.meta.paginator.source)
+                else:
+                    source = node
                 paginator = Paginator(resource.meta.paginator)
-                added_resources += paginator.walk_paged_resources(node, resource)
+                added_resources += paginator.walk_paged_resources(source, resource)
 
             node.resources += added_resources
 

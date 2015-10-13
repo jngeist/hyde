@@ -255,12 +255,21 @@ def get_tagger_sort_method(site):
             sys.exc_info())
     return walker
 
+def get_tagger_tagkey(site):
+    config = site.config
+    try:
+        tagkey = attrgetter('tagger.tagkey')(config)
+    except:
+        tagkey = "meta.tags"
+    return tagkey
+
 def walk_resources_tagged_with(node, tag):
     tags = set(unicode(tag).split('+'))
     walker = get_tagger_sort_method(node.site)
+    tagkey = get_tagger_tagkey(node.site)
     for resource in walker():
         try:
-            taglist = set(attrgetter("meta.tags")(resource))
+            taglist = set(attrgetter(tagkey)(resource))
         except AttributeError:
             continue
         if tags <= taglist:
@@ -298,11 +307,12 @@ class TaggerPlugin(Plugin):
         config = self.site.config
         content = self.site.content
         tags = {}
+        tagkey = get_tagger_tagkey(self.site)
         add_method(Node,
-            'walk_resources_tagged_with', walk_resources_tagged_with)
+            'walk_resources_tagged_with_', walk_resources_tagged_with)
         walker = get_tagger_sort_method(self.site)
         for resource in walker():
-            self._process_tags_in_resource(resource, tags)
+            self._process_tags_in_resource(resource, tags, tagkey)
         self._process_tag_metadata(tags)
         self.site.tagger = Expando(dict(tags=tags))
         self._generate_archives()
@@ -326,13 +336,13 @@ class TaggerPlugin(Plugin):
             if tagname in tags:
                 tags[tagname].update(meta)
 
-    def _process_tags_in_resource(self, resource, tags):
+    def _process_tags_in_resource(self, resource, tags, tagkey):
         """
         Reads the tags associated with this resource and
         adds them to the tag list if needed.
         """
         try:
-            taglist = attrgetter("meta.tags")(resource)
+            taglist = attrgetter(tagkey)(resource)
         except AttributeError:
             return
 

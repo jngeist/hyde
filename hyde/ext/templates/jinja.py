@@ -717,13 +717,6 @@ class Jinja2Template(Template):
         self.env.filters['top'] = top
         self.env.filters.update(settings['filters'])
 
-        try:
-            filters = attrgetter('config.jinja2.filters')(site).to_dict()
-            for (name, funcname) in filters.items():
-                self.env.filters[name] = load_python_object(funcname)
-        except AttributeError:
-            pass
-
         config = {}
         if hasattr(site, 'config'):
             config = site.config
